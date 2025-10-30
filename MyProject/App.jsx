@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Profile from './screens/Profile';
 import SplashScreen from './screens/SplashScreen';
+import Home from './screens/Home';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,11 +47,12 @@ export default function App() {
     return (
         <NavigationContainer>
             <Stack.Navigator 
-                initialRouteName={isOnboardingComplete ? "Profile" : "Onboarding"}
+                initialRouteName={isOnboardingComplete ? "Home" : "Onboarding"}
                 screenOptions={{ headerShown: false }}
             >
                 <Stack.Screen name="Onboarding" component={Onboarding} />
                 <Stack.Screen name="Profile" component={Profile} />
+                <Stack.Screen name="Home" component={Home} />
             </Stack.Navigator>
         </NavigationContainer>
     );
