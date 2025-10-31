@@ -1,6 +1,6 @@
 import React, { use } from 'react'
 import { useState, useEffect } from 'react';
-import { Text, View, Image, StyleSheet, Pressable} from 'react-native'
+import { Text, View, Image, StyleSheet, Pressable, FlatList} from 'react-native'
 import logo from '../assets/upscalemedia-transformed.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,9 +9,19 @@ export default function Home({ navigation }) {
     const [profileImage, setProfileImage] = useState(null);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [menuData, setMenuData] = useState([]);
+
+    const imageMap = {
+        'bruschetta.jpg': require('../assets/bruschetta.jpg'),
+        'greekSalad.jpg': require('../assets/greekSalad.jpg'),
+        'lemonDessert.jpg': require('../assets/lemonDessert.jpg'),
+        'grilledFish.jpg': require('../assets/grilledFish.jpg'),
+        'pasta.jpg': require('../assets/pasta.jpg'),
+    }
 
     useEffect(() => {
         getFirstAndLastName();
+        fetchMenuData();
     }, []);
 
     useEffect(() => {
@@ -48,6 +58,16 @@ export default function Home({ navigation }) {
         const firstInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
         const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
         return firstInitial + lastInitial;
+    }
+
+    const fetchMenuData = async () => {
+        try {
+            const response = await fetch('https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json');
+            const data = await response.json();
+            setMenuData(data.menu);
+        } catch (error) {
+            console.error("Error fetching menu data:", error);
+        }
     }
 
     return (
@@ -91,6 +111,37 @@ export default function Home({ navigation }) {
                     <Ionicons name='search' size={32} color='#495E57' style={{ backgroundColor: '#F4C917', padding: 10, borderRadius: 10, margin: 16, width: 50, height: 50, textAlign: 'center',}} />
                 </Pressable>
             </View>
+            <View style={styles.menu}>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', margin: 16 }}>ORDER FOR DELIVERY!</Text>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between',}}>
+                    <Pressable style={{ backgroundColor: 'lightgray', marginLeft: 16, padding: 8, borderRadius: 8}}>
+                        <Text>Starters</Text>
+                    </Pressable>
+                    <Pressable style={{ backgroundColor: 'lightgray', padding: 8, borderRadius: 8 }}>
+                        <Text>Mains</Text>
+                    </Pressable>
+                    <Pressable style={{ backgroundColor: 'lightgray', padding: 8, borderRadius: 8 }}>
+                        <Text>Desserts</Text>
+                    </Pressable>
+                    <Pressable style={{ backgroundColor: 'lightgray', marginRight: 16, padding: 8, borderRadius: 8 }}>
+                        <Text>Drinks</Text>
+                    </Pressable>
+                </View>
+                <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 32 }}></View>
+                <FlatList
+                    data={menuData}
+                    renderItem={({ item }) => (
+                        <View style={{ margin: 16, flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <View style={{ flex: 1, paddingRight: 16 }}>
+                                <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>{item.name}</Text>
+                                <Text style={{ color: '#888', marginBottom: 4 }}>{item.description}</Text>
+                                <Text>{item.price}</Text>
+                            </View>
+                            <Image source={imageMap[item.image]} style={{ width: 100, height: 100, }} />
+                        </View>
+                    )}
+                />
+            </View>
         </View>
     );
 };
@@ -109,6 +160,9 @@ const styles = StyleSheet.create({
     },
     body: {
         backgroundColor: '#4B605B',
-        flex: .5,
+        flex: .9,
+    },
+    menu: {
+        flex: 1,
     }
 });
