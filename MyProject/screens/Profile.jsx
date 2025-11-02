@@ -244,7 +244,10 @@ const Profile = ({ navigation }) => {
                     </Pressable>
                     <Pressable 
                         style={{ backgroundColor: 'green', alignItems: 'center', padding: 10, borderRadius: 8,}}
-                        onPress={saveChanges}>
+                        onPress={() => {
+                            saveChanges();
+                            navigation.popToTop();
+                        }}>
                         <Text style={{ color: 'white' }}>Save Changes</Text>
                     </Pressable>
                 </View>
