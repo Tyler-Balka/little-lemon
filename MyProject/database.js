@@ -22,8 +22,8 @@ const createTable = async () => {
 const fetchMenuData = async () => {
     try {
         // if no data in table, fetch from API and store
-        const result = await (await db).execAsync('SELECT COUNT(*) as count FROM menu;');
-        const count = result[0].rows._array[0].count;
+        const result = await (await db).getAllAsync('SELECT COUNT(*) as count FROM menu;');
+        const count = result[0].count;
         if (count === 0) {
             const response = await fetch('https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json');
             const data = await response.json();
@@ -31,7 +31,7 @@ const fetchMenuData = async () => {
 
             // insert menu items into the database
             for (const item of menuItems) {
-                await (await db).execAsync(
+                await (await db).runAsync(
                     `INSERT INTO menu (name, description, price, image, category) VALUES (?, ?, ?, ?, ?);`,
                     [item.name, item.description, item.price, item.image, item.category]
                 );
@@ -44,8 +44,8 @@ const fetchMenuData = async () => {
 
 const getMenuFromDB = async () => {
     try {
-        const result = await (await db).execAsync('SELECT * FROM menu;');
-        return result[0].rows._array;
+        const result = await (await db).getAllAsync('SELECT * FROM menu;');
+        return result;
     } catch (error) {
         console.error("Error retrieving menu from database:", error);
         return [];
@@ -54,8 +54,8 @@ const getMenuFromDB = async () => {
 
 const getCategory = async (category) => {
     try {
-        const result = await ((await db).execAsync('SELECT * FROM menu WHERE category = ?;', [category]));
-        return result[0].rows._array;
+        const result = await ((await db).getAllAsync('SELECT * FROM menu WHERE category = ?;', [category]));
+        return result;
     } catch (error) {
         console.error("Error retrieving category from database:", error);
         return [];

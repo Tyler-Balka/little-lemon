@@ -1,6 +1,6 @@
-import React, { use } from 'react'
 import { useState, useEffect } from 'react';
 import { Text, View, Image, StyleSheet, Pressable, FlatList, ScrollView} from 'react-native'
+import { createTable, fetchMenuData, getMenuFromDB, getCategory } from '../database';
 import logo from '../assets/upscalemedia-transformed.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,8 +22,13 @@ export default function Home({ navigation }) {
 
     useEffect(() => {
         getFirstAndLastName();
+        createTable();
         fetchMenuData();
     }, []);
+
+    useEffect(() => {
+        getMenu();
+    }, [selectedCategories]);
 
     useEffect(() => {
         getProfilePicture();
@@ -77,11 +82,29 @@ export default function Home({ navigation }) {
         return selectedCategories.includes(category);
     }
 
-    const fetchMenuData = async () => {
+    {/*const fetchMenuData = async () => {
         try {
             const response = await fetch('https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json');
             const data = await response.json();
             setMenuData(data.menu);
+        } catch (error) {
+            console.error("Error fetching menu data:", error);
+        }
+    }
+    */}
+
+    const getMenu = async () => {
+        try {
+            let data = [];
+            if (selectedCategories.length === 0) {
+                data = await getMenuFromDB();
+            } else {
+                for (const category of selectedCategories) {
+                    const categoryData = await getCategory(category);
+                    data = data.concat(categoryData);
+                }
+            }
+            setMenuData(data);
         } catch (error) {
             console.error("Error fetching menu data:", error);
         }
@@ -140,37 +163,37 @@ export default function Home({ navigation }) {
                 >
                     <View style={{ flexDirection: 'row', gap: 16 }}>
                         <Pressable 
-                            onPress={() => toggleCategory('Starters')}
+                            onPress={() => toggleCategory('starters')}
                             style={[
                                 { backgroundColor: 'lightgray', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 35, height: 50, alignItems: 'center', justifyContent: 'center' }, 
-                                isCategorySelected('Starters') && { backgroundColor: '#F4C917' }
+                                isCategorySelected('starters') && { backgroundColor: '#F4C917' }
                             ]}
                         >
                             <Text allowFontScaling={false} style={{ color: '#333333', fontSize: 15, fontWeight: '600' }}>Starters</Text>
                         </Pressable>
                         <Pressable 
-                            onPress={() => toggleCategory('Mains')}
+                            onPress={() => toggleCategory('mains')}
                             style={[
                                 { backgroundColor: 'lightgray', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 35, height: 50, alignItems: 'center', justifyContent: 'center' }, 
-                                isCategorySelected('Mains') && { backgroundColor: '#F4C917' }
+                                isCategorySelected('mains') && { backgroundColor: '#F4C917' }
                             ]}
                         >
                             <Text allowFontScaling={false} style={{ color: '#333333', fontSize: 15, fontWeight: '600' }}>Mains</Text>
                         </Pressable>
                         <Pressable 
-                            onPress={() => toggleCategory('Desserts')}
+                            onPress={() => toggleCategory('desserts')}
                             style={[
                                 { backgroundColor: 'lightgray', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 35, height: 50, alignItems: 'center', justifyContent: 'center' }, 
-                                isCategorySelected('Desserts') && { backgroundColor: '#F4C917' }
+                                isCategorySelected('desserts') && { backgroundColor: '#F4C917' }
                             ]}
                         >
                             <Text allowFontScaling={false} style={{ color: '#333333', fontSize: 15, fontWeight: '600' }}>Desserts</Text>
                         </Pressable>
                         <Pressable 
-                            onPress={() => toggleCategory('Drinks')}
+                            onPress={() => toggleCategory('drinks')}
                             style={[
                                 { backgroundColor: 'lightgray', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 35, height: 50, alignItems: 'center', justifyContent: 'center' }, 
-                                isCategorySelected('Drinks') && { backgroundColor: '#F4C917' }
+                                isCategorySelected('drinks') && { backgroundColor: '#F4C917' }
                             ]}
                         >
                             <Text allowFontScaling={false} style={{ color: '#333333', fontSize: 15, fontWeight: '600' }}>Drinks</Text>
