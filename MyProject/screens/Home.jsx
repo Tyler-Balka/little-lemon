@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Text, View, Image, StyleSheet, Pressable, FlatList, ScrollView} from 'react-native'
-import { createTable, fetchMenuData, getMenuFromDB, getCategory } from '../database';
+import { Text, View, Image, StyleSheet, Pressable, FlatList, ScrollView, TextInput} from 'react-native'
+import { createTable, fetchMenuData, getMenuFromDB, getCategory, filterMenuByName } from '../database';
 import logo from '../assets/upscalemedia-transformed.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -110,6 +110,15 @@ export default function Home({ navigation }) {
         }
     }
 
+    const handleSearch = async (searchTerm) => {
+        if (searchTerm) {
+            const filteredData = await filterMenuByName(searchTerm, selectedCategories);
+            setMenuData(filteredData);
+        } else {
+            getMenu();
+        }
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -147,9 +156,13 @@ export default function Home({ navigation }) {
                         resizeMode='stretch'
                     />
                 </View>
-                <Pressable>
-                    <Ionicons name='search' size={32} color='#495E57' style={{ backgroundColor: '#F4C917', padding: 10, borderRadius: 10, margin: 16, width: 50, height: 50, textAlign: 'center',}} />
-                </Pressable>
+                <TextInput 
+                    style={{ backgroundColor: '#F1F0EB', padding: 10, borderRadius: 10, margin: 16, width: '90%', height: 50,}}
+                    placeholder='Search...'
+                    onChangeText={handleSearch}
+                >
+                    {/*<Ionicons name='search' size={32} color='#495E57' style={{ position: 'absolute', left: 10, top: 10 }} />*/}
+                </TextInput>
             </View>
             <View style={styles.menu}>
                 <Text style={{ fontSize: 20, fontWeight: 'bold', margin: 16 }}>ORDER FOR DELIVERY!</Text>

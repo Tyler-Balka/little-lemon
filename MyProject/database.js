@@ -62,4 +62,20 @@ const getCategory = async (category) => {
     }
 }
 
-export { createTable, fetchMenuData, getMenuFromDB, getCategory };
+const filterMenuByName = async (name, categories = []) => {
+    try {
+        let query = `SELECT * FROM menu WHERE name LIKE ?;`;
+        let params = [`%${name}%`];
+        if (categories.length > 0) {
+            query += ` AND category IN (${categories.map(() => '?').join(',')});`;
+            params.push(...categories);
+        }
+        const result = await (await db).getAllAsync(query, params);
+        return result;
+    } catch (error) {
+        console.error("Error filtering menu by name:", error);
+        return [];
+    }
+}
+
+export { createTable, fetchMenuData, getMenuFromDB, getCategory, filterMenuByName };
