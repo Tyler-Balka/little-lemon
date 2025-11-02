@@ -52,4 +52,14 @@ const getMenuFromDB = async () => {
     }
 }
 
-export { createTable, fetchMenuData, getMenuFromDB };
+const getCategory = async (category) => {
+    try {
+        const result = await ((await db).execAsync('SELECT * FROM menu WHERE category = ?;', [category]));
+        return result[0].rows._array;
+    } catch (error) {
+        console.error("Error retrieving category from database:", error);
+        return [];
+    }
+}
+
+export { createTable, fetchMenuData, getMenuFromDB, getCategory };

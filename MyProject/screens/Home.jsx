@@ -1,6 +1,6 @@
 import React, { use } from 'react'
 import { useState, useEffect } from 'react';
-import { Text, View, Image, StyleSheet, Pressable, FlatList} from 'react-native'
+import { Text, View, Image, StyleSheet, Pressable, FlatList, ScrollView} from 'react-native'
 import logo from '../assets/upscalemedia-transformed.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +10,7 @@ export default function Home({ navigation }) {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [menuData, setMenuData] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState([]);
 
     const imageMap = {
         'bruschetta.jpg': require('../assets/bruschetta.jpg'),
@@ -58,6 +59,22 @@ export default function Home({ navigation }) {
         const firstInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
         const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
         return firstInitial + lastInitial;
+    }
+
+    const toggleCategory = (category) => {
+        setSelectedCategories(prev => {
+            if (prev.includes(category)) {
+                // Remove category if already selected
+                return prev.filter(cat => cat !== category);
+            } else {
+                // Add category if not selected
+                return [...prev, category];
+            }
+        });
+    }
+
+    const isCategorySelected = (category) => {
+        return selectedCategories.includes(category);
     }
 
     const fetchMenuData = async () => {
@@ -113,21 +130,54 @@ export default function Home({ navigation }) {
             </View>
             <View style={styles.menu}>
                 <Text style={{ fontSize: 20, fontWeight: 'bold', margin: 16 }}>ORDER FOR DELIVERY!</Text>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between',}}>
-                    <Pressable style={{ backgroundColor: 'lightgray', marginLeft: 16, padding: 8, borderRadius: 8}}>
-                        <Text>Starters</Text>
-                    </Pressable>
-                    <Pressable style={{ backgroundColor: 'lightgray', padding: 8, borderRadius: 8 }}>
-                        <Text>Mains</Text>
-                    </Pressable>
-                    <Pressable style={{ backgroundColor: 'lightgray', padding: 8, borderRadius: 8 }}>
-                        <Text>Desserts</Text>
-                    </Pressable>
-                    <Pressable style={{ backgroundColor: 'lightgray', marginRight: 16, padding: 8, borderRadius: 8 }}>
-                        <Text>Drinks</Text>
-                    </Pressable>
-                </View>
-                <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 32 }}></View>
+                <ScrollView 
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={true}
+                    contentContainerStyle={{ 
+                        paddingHorizontal: 16,
+                        paddingBottom: 48
+                    }}
+                >
+                    <View style={{ flexDirection: 'row', gap: 16 }}>
+                        <Pressable 
+                            onPress={() => toggleCategory('Starters')}
+                            style={[
+                                { backgroundColor: 'lightgray', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 35, height: 50, alignItems: 'center', justifyContent: 'center' }, 
+                                isCategorySelected('Starters') && { backgroundColor: '#F4C917' }
+                            ]}
+                        >
+                            <Text allowFontScaling={false} style={{ color: '#333333', fontSize: 15, fontWeight: '600' }}>Starters</Text>
+                        </Pressable>
+                        <Pressable 
+                            onPress={() => toggleCategory('Mains')}
+                            style={[
+                                { backgroundColor: 'lightgray', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 35, height: 50, alignItems: 'center', justifyContent: 'center' }, 
+                                isCategorySelected('Mains') && { backgroundColor: '#F4C917' }
+                            ]}
+                        >
+                            <Text allowFontScaling={false} style={{ color: '#333333', fontSize: 15, fontWeight: '600' }}>Mains</Text>
+                        </Pressable>
+                        <Pressable 
+                            onPress={() => toggleCategory('Desserts')}
+                            style={[
+                                { backgroundColor: 'lightgray', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 35, height: 50, alignItems: 'center', justifyContent: 'center' }, 
+                                isCategorySelected('Desserts') && { backgroundColor: '#F4C917' }
+                            ]}
+                        >
+                            <Text allowFontScaling={false} style={{ color: '#333333', fontSize: 15, fontWeight: '600' }}>Desserts</Text>
+                        </Pressable>
+                        <Pressable 
+                            onPress={() => toggleCategory('Drinks')}
+                            style={[
+                                { backgroundColor: 'lightgray', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 35, height: 50, alignItems: 'center', justifyContent: 'center' }, 
+                                isCategorySelected('Drinks') && { backgroundColor: '#F4C917' }
+                            ]}
+                        >
+                            <Text allowFontScaling={false} style={{ color: '#333333', fontSize: 15, fontWeight: '600' }}>Drinks</Text>
+                        </Pressable>
+                    </View>
+                </ScrollView>
+                {/*<View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 32 }}></View>*/}
                 <FlatList
                     data={menuData}
                     renderItem={({ item }) => (
